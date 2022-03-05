@@ -37,9 +37,11 @@ public:
 	UStaticMeshComponent* cubetto;
 
 	const uint8* PIPPO;
+	UTexture2D* TextureStatica;
 
 	TArray<uint8> FrameMandabile;
 
+	FTexturePlatformData* Data;
 
 protected:
 	// Called when the game starts or when spawned

@@ -70,13 +70,13 @@ void AMyActor_capture::BeginPlay()
 	int X = RenderTarget->GetSurfaceHeight();
 	int Y = RenderTarget->GetSurfaceWidth();
 	GLog->Logf(TEXT("Size: %d %d"), X, Y);
-	Texture2D = RenderTarget->ConstructTexture2D(this, FString("Tex2D"), EObjectFlags::RF_NoFlags);
+	Texture2D = RenderTarget->ConstructTexture2D(this, FString("Tex2D"), EObjectFlags::RF_NoFlags, CTF_DeferCompression);
 	//FTextureRenderTargetResource *Resource = RenderTarget->GetRenderTargetResource();
 	int xx = Texture2D->GetSizeX();
 	int yy = Texture2D->GetSizeY();
 	GLog->Logf(TEXT("Texture size: %d %d"), xx, yy);
 
-	FTexturePlatformData* Data = Texture2D->PlatformData;
+	Data = Texture2D->PlatformData;
 	EPixelFormat Format = Data->PixelFormat;
 	GLog->Logf(TEXT("Pixel format: %d"), (uint8)(Format));
 	//format of pixel is PFloatRGBA
@@ -87,8 +87,8 @@ void AMyActor_capture::BeginPlay()
 	//i've got 1 byte size of element
 
 	//const void* Table = Data->Mips[0].BulkData.LockReadOnly();
-	PIPPO = static_cast<const uint8*>(Data->Mips[0].BulkData.LockReadOnly());
-	Data->Mips[0].BulkData.Unlock();
+	//PIPPO = static_cast<const uint8*>(Data->Mips[0].BulkData.LockReadOnly());
+	//Data->Mips[0].BulkData.Unlock();
 
 	
 	
@@ -136,16 +136,23 @@ void AMyActor_capture::BeginPlay()
 // Called every frame
 void AMyActor_capture::Tick(float DeltaTime)
 {
-	if (ConnessioneAttiva)
-	{
+	Camera->UpdateContent();
+	TextureStatica = Camera->TextureTarget->ConstructTexture2D(this, "CameraImage", EObjectFlags::RF_NoFlags, CTF_DeferCompression);
 
-
-	}
+	PIPPO = static_cast<const uint8*>(TextureStatica->PlatformData->Mips[0].BulkData.LockReadOnly());
+	TextureStatica->PlatformData->Mips[0].BulkData.Unlock();
 
 	if (ClientSocket && ClientSocket->GetConnectionState() == SCS_Connected)
 	{	
 		int32 BytesSent = 0;
-		ClientSocket->Send(PIPPO, 1024, BytesSent);
+		
+		// CREO TEXTURE
+		//PIPPO = static_cast<const uint8*>(Data->Mips[0].BulkData.LockReadOnly());
+		//Data->Mips[0].BulkData.Unlock();
+		
+		ClientSocket->Send(PIPPO, 65536, BytesSent);
+		
+		
 	}
 
 	Super::Tick(DeltaTime);
