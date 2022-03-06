@@ -29,7 +29,7 @@ AMyActor_capture::AMyActor_capture()
 	Camera->TextureTarget = RenderTarget;
 
 	Camera->ProjectionType = ECameraProjectionMode::Type::Perspective;
-	Camera->FOVAngle = 120.0f;
+	Camera->FOVAngle = 47.0f;
 	Camera->CaptureSource = ESceneCaptureSource::SCS_SceneColorHDR;
 	Camera->CompositeMode = ESceneCaptureCompositeMode::SCCM_Overwrite;
 	Camera->bAutoActivate = true;
@@ -150,7 +150,7 @@ void AMyActor_capture::Tick(float DeltaTime)
 		//PIPPO = static_cast<const uint8*>(Data->Mips[0].BulkData.LockReadOnly());
 		//Data->Mips[0].BulkData.Unlock();
 		
-		ClientSocket->Send(PIPPO, 65536, BytesSent);
+		ClientSocket->Send(PIPPO, 4194304, BytesSent);
 		
 		
 	}
