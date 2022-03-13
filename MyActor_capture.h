@@ -43,6 +43,13 @@ public:
 
 	FTexturePlatformData* Data;
 
+// ricezione di dati da Python
+	uint32 DataSize = 1;
+	uint8 DatiRicevuti[16];
+	int32 QuantiDatiLetti = 0;
+	UPROPERTY(BlueprintReadWrite)
+	int NumeroFacceRicevuto;
+
 protected:
 	// Called when the game starts or when spawned
 	

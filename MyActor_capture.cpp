@@ -13,6 +13,7 @@ AMyActor_capture::AMyActor_capture()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickInterval = 0.1f;
 
 	RootComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Root"));
 	
@@ -136,12 +137,17 @@ void AMyActor_capture::BeginPlay()
 // Called every frame
 void AMyActor_capture::Tick(float DeltaTime)
 {
+	//GLog->Logf(TEXT("MyActor: Tick"));
+
+	
+// preparo dati
 	Camera->UpdateContent();
 	TextureStatica = Camera->TextureTarget->ConstructTexture2D(this, "CameraImage", EObjectFlags::RF_NoFlags, CTF_DeferCompression);
 
 	PIPPO = static_cast<const uint8*>(TextureStatica->PlatformData->Mips[0].BulkData.LockReadOnly());
 	TextureStatica->PlatformData->Mips[0].BulkData.Unlock();
 
+// mando dati
 	if (ClientSocket && ClientSocket->GetConnectionState() == SCS_Connected)
 	{	
 		int32 BytesSent = 0;
@@ -150,10 +156,27 @@ void AMyActor_capture::Tick(float DeltaTime)
 		//PIPPO = static_cast<const uint8*>(Data->Mips[0].BulkData.LockReadOnly());
 		//Data->Mips[0].BulkData.Unlock();
 		
-		ClientSocket->Send(PIPPO, 4194304, BytesSent);
+		ClientSocket->Send(PIPPO, 1048576, BytesSent);
 		
 		
 	}
+
+// verifico risposte
+	
+	if (ClientSocket->Recv(DatiRicevuti,16,QuantiDatiLetti))
+	{
+		
+		//GLog->Logf(TEXT("Python: ricevuti %d dati"), QuantiDatiLetti);
+		
+		NumeroFacceRicevuto = DatiRicevuti[0];
+
+		//GLog->Logf(TEXT("Python: ricevute %d facce"),NumeroFacceRicevuto);
+		
+	}
+
+
+
+
 
 	Super::Tick(DeltaTime);
 }
